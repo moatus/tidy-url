@@ -9,7 +9,7 @@ COPY package.json ./
 RUN npm install --omit=dev
 
 # Copy server file
-COPY server.js ./
+COPY src/server.js ./server.js
 
 # Expose port
 EXPOSE 4300
