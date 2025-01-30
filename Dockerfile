@@ -3,14 +3,13 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm install
-RUN npm install express cors
+RUN npm install --omit=dev
 
-# Copy app files
-COPY . .
+# Copy server file
+COPY server.js ./
 
 # Expose port
 EXPOSE 4300
