@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { TidyURL } = require('./lib/tidy');
+const { TidyURL } = require('tidy-url');
 const app = express();
 
 // Enable CORS and JSON parsing
