@@ -32,7 +32,7 @@ app.get('/config', (req, res) => {
     });
 });
 
-// Single URL cleaning endpoint with all options
+// Single URL cleaning endpoint
 app.post('/clean', async (req, res) => {
     try {
         const { url, options } = req.body;
@@ -41,31 +41,50 @@ app.post('/clean', async (req, res) => {
             return res.status(400).json({ error: 'URL is required' });
         }
 
-        // Apply configuration if provided
+        // Configure TidyURL
         if (options) {
-            if (options.allowAMP !== undefined) TidyURL.config.set('allowAMP', options.allowAMP);
-            if (options.allowRedirects !== undefined) TidyURL.config.set('allowRedirects', options.allowRedirects);
-            if (options.fullClean !== undefined) TidyURL.config.set('fullClean', options.fullClean);
-            if (options.removeHash !== undefined) TidyURL.config.set('removeHash', options.removeHash);
-            if (options.removeTrailing !== undefined) TidyURL.config.set('removeTrailing', options.removeTrailing);
-            if (options.forceHTTPS !== undefined) TidyURL.config.set('forceHTTPS', options.forceHTTPS);
-            if (options.parameterKeyBlacklist) TidyURL.config.set('parameterKeyBlacklist', options.parameterKeyBlacklist);
-            if (options.parameterKeyWhitelist) TidyURL.config.set('parameterKeyWhitelist', options.parameterKeyWhitelist);
+            if (options.parameterKeyWhitelist) {
+                TidyURL.config.set('parameterKeyWhitelist', options.parameterKeyWhitelist);
+            }
+            if (options.parameterKeyBlacklist) {
+                TidyURL.config.set('parameterKeyBlacklist', options.parameterKeyBlacklist);
+            }
+            if (options.allowAMP !== undefined) {
+                TidyURL.config.set('allowAMP', options.allowAMP);
+            }
+            if (options.allowRedirects !== undefined) {
+                TidyURL.config.set('allowRedirects', options.allowRedirects);
+            }
+            if (options.fullClean !== undefined) {
+                TidyURL.config.set('fullClean', options.fullClean);
+            }
+            if (options.removeHash !== undefined) {
+                TidyURL.config.set('removeHash', options.removeHash);
+            }
+            if (options.removeTrailing !== undefined) {
+                TidyURL.config.set('removeTrailing', options.removeTrailing);
+            }
+            if (options.forceHTTPS !== undefined) {
+                TidyURL.config.set('forceHTTPS', options.forceHTTPS);
+            }
         }
 
-        const result = TidyURL.clean(url);
-
-        // Add validation info to response
-        const isValid = TidyURL.validate(url);
-        result.validation = { isValid };
-
-        res.json(result);
+        // Clean the URL
+        const cleanResult = TidyURL.clean(url);
+        const cleanedUrl = cleanResult.url;
+        
+        res.json({
+            originalUrl: url,
+            cleanedUrl: cleanedUrl,
+            wasModified: url !== cleanedUrl,
+            details: cleanResult.info
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Batch URL cleaning endpoint with all options
+// Batch URL cleaning endpoint
 app.post('/clean-batch', async (req, res) => {
     try {
         const { urls, options } = req.body;
@@ -74,22 +93,42 @@ app.post('/clean-batch', async (req, res) => {
             return res.status(400).json({ error: 'URLs array is required' });
         }
 
-        // Apply configuration if provided
+        // Configure TidyURL (same as single URL endpoint)
         if (options) {
-            if (options.allowAMP !== undefined) TidyURL.config.set('allowAMP', options.allowAMP);
-            if (options.allowRedirects !== undefined) TidyURL.config.set('allowRedirects', options.allowRedirects);
-            if (options.fullClean !== undefined) TidyURL.config.set('fullClean', options.fullClean);
-            if (options.removeHash !== undefined) TidyURL.config.set('removeHash', options.removeHash);
-            if (options.removeTrailing !== undefined) TidyURL.config.set('removeTrailing', options.removeTrailing);
-            if (options.forceHTTPS !== undefined) TidyURL.config.set('forceHTTPS', options.forceHTTPS);
-            if (options.parameterKeyBlacklist) TidyURL.config.set('parameterKeyBlacklist', options.parameterKeyBlacklist);
-            if (options.parameterKeyWhitelist) TidyURL.config.set('parameterKeyWhitelist', options.parameterKeyWhitelist);
+            if (options.parameterKeyWhitelist) {
+                TidyURL.config.set('parameterKeyWhitelist', options.parameterKeyWhitelist);
+            }
+            if (options.parameterKeyBlacklist) {
+                TidyURL.config.set('parameterKeyBlacklist', options.parameterKeyBlacklist);
+            }
+            if (options.allowAMP !== undefined) {
+                TidyURL.config.set('allowAMP', options.allowAMP);
+            }
+            if (options.allowRedirects !== undefined) {
+                TidyURL.config.set('allowRedirects', options.allowRedirects);
+            }
+            if (options.fullClean !== undefined) {
+                TidyURL.config.set('fullClean', options.fullClean);
+            }
+            if (options.removeHash !== undefined) {
+                TidyURL.config.set('removeHash', options.removeHash);
+            }
+            if (options.removeTrailing !== undefined) {
+                TidyURL.config.set('removeTrailing', options.removeTrailing);
+            }
+            if (options.forceHTTPS !== undefined) {
+                TidyURL.config.set('forceHTTPS', options.forceHTTPS);
+            }
         }
 
         const results = urls.map(url => {
-            const result = TidyURL.clean(url);
-            result.validation = { isValid: TidyURL.validate(url) };
-            return result;
+            const cleanResult = TidyURL.clean(url);
+            return {
+                originalUrl: url,
+                cleanedUrl: cleanResult.url,
+                wasModified: url !== cleanResult.url,
+                details: cleanResult.info
+            };
         });
         
         res.json(results);
