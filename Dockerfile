@@ -2,14 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy all files
 COPY . .
-
-# Install dependencies
 RUN npm install --omit=dev
-
-# Expose port
 EXPOSE 4300
 
-# Start the server
+ENV PORT=4300
 CMD ["node", "src/server.js"]
