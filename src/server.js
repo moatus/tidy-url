@@ -11,6 +11,9 @@ app.post('/clean', (req, res) => {
     if (!url) return res.status(400).json({ error: 'URL required' });
     
     try {
+        TidyURL.config.set('fullClean', true);
+        TidyURL.config.set('parameterKeyWhitelist', []);
+        
         const result = TidyURL.clean(url);
         res.json({ url: result.url });
     } catch (error) {
@@ -18,4 +21,5 @@ app.post('/clean', (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 4300);
+const port = process.env.PORT || 4300;
+app.listen(port, () => console.log(`Server running on port ${port}`));
